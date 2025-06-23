@@ -880,3 +880,341 @@ EOL
     log_message "SUCCESS" "BLE security assessment report created"
     return 0
 }
+
+# Função para simular ataques BLE (para testes seguros)
+simulate_ble_attack() {
+    local target="$1"
+    local attack_type="${2:-passive}"
+    local mode="${3:-safe}"
+    
+    validate_ble_address "$target" || return 1
+    
+    echo "🔬 SIMULATING BLE attack for testing"
+    echo "Target: $target"
+    echo "Attack Type: $attack_type"
+    echo "Mode: $mode"
+    echo ""
+    
+    case "$attack_type" in
+        "passive"|"reconnaissance")
+            echo "📡 Passive BLE reconnaissance simulation"
+            echo "Scanning for BLE advertisements..."
+            sleep 1
+            echo "Simulated devices found: 3"
+            echo "Target device advertising interval: 100ms"
+            echo "Signal strength: -65 dBm"
+            ;;
+        "gatt_enum"|"service_discovery")
+            echo "🔍 GATT service enumeration simulation"
+            echo "Discovering services..."
+            sleep 1
+            echo "Primary services found: 4"
+            echo "Characteristics found: 12"
+            echo "Read permissions: 8"
+            echo "Write permissions: 3"
+            ;;
+        "data_extraction")
+            echo "📥 Data extraction simulation"
+            echo "Reading device characteristics..."
+            sleep 1
+            echo "Device Name: Test BLE Device"
+            echo "Battery Level: 85%"
+            echo "Manufacturer: Simulated Corp"
+            ;;
+        *)
+            echo "❌ Unknown simulation type: $attack_type"
+            return 1
+            ;;
+    esac
+    
+    echo "✅ BLE attack simulation completed safely"
+    return 0
+}
+
+# Monitorar tráfego BLE
+monitor_ble_traffic() {
+    local target="$1"
+    local duration="${2:-30}"
+    local output_file="$3"
+    
+    validate_ble_address "$target" || return 1
+    
+    echo "📡 Monitoring BLE traffic for $target"
+    echo "Duration: ${duration}s"
+    echo "Output: $output_file"
+    echo ""
+    
+    # Verificar ferramentas de captura
+    if command -v hcidump >/dev/null 2>&1; then
+        echo "🔍 Using hcidump for BLE traffic capture"
+        
+        # Capturar tráfego BLE específico
+        echo "Starting BLE packet capture..."
+        timeout "$duration" hcidump -w "$output_file" -i hci0 2>/dev/null &
+        local capture_pid=$!
+        
+        echo "📡 Capture started (PID: $capture_pid)"
+        echo "⏱️ Monitoring for ${duration} seconds..."
+        
+        # Mostrar progresso
+        for ((i=1; i<=duration; i++)); do
+            if ((i % 10 == 0)); then
+                echo "  Progress: ${i}/${duration}s"
+            fi
+            sleep 1
+        done
+        
+        # Aguardar conclusão
+        wait $capture_pid 2>/dev/null || true
+        
+        echo "✅ BLE traffic monitoring completed"
+        
+        # Verificar se arquivo foi criado
+        if [[ -f "$output_file" ]] && [[ -s "$output_file" ]]; then
+            local file_size=$(stat -c%s "$output_file" 2>/dev/null || echo "0")
+            echo "📁 Capture file: $output_file (${file_size} bytes)"
+            
+            # Análise básica do tráfego capturado
+            echo "📊 Basic traffic analysis:"
+            local packet_count=$(hcidump -r "$output_file" 2>/dev/null | wc -l)
+            echo "  📦 Packets captured: $packet_count"
+            
+            # Detectar tipos de tráfego
+            if hcidump -r "$output_file" 2>/dev/null | grep -q "ADV_IND"; then
+                echo "  📢 Advertising packets detected"
+            fi
+            
+            if hcidump -r "$output_file" 2>/dev/null | grep -q "CONNECT_REQ"; then
+                echo "  🔗 Connection requests detected"
+            fi
+            
+        else
+            echo "⚠️ No traffic captured or file empty"
+        fi
+        
+    elif command -v tshark >/dev/null 2>&1; then
+        echo "🔍 Using tshark for BLE traffic capture"
+        
+        # Captura usando tshark com filtro BLE
+        timeout "$duration" tshark -i bluetooth0 -f "btle" -w "$output_file" 2>/dev/null &
+        local capture_pid=$!
+        
+        echo "📡 Tshark capture started (PID: $capture_pid)"
+        wait $capture_pid 2>/dev/null || true
+        
+        echo "✅ BLE traffic capture completed"
+        
+    else
+        echo "❌ No capture tools available"
+        echo "Install: sudo apt-get install bluez-hcidump wireshark"
+        
+        # Simulação de captura para testes
+        echo "🔬 Simulating traffic capture..."
+        cat > "$output_file" << EOF
+=== SIMULATED BLE TRAFFIC CAPTURE ===
+Target: $target
+Duration: ${duration}s
+Timestamp: $(date)
+
+Simulated Traffic Summary:
+- Advertisement packets: 150
+- Connection requests: 5
+- GATT operations: 23
+- Data packets: 89
+
+Note: This is simulated data for testing purposes.
+Real traffic monitoring requires hcidump or wireshark.
+EOF
+        echo "📋 Simulation logged to: $output_file"
+    fi
+    
+    return 0
+}
+
+# Detectar beacons BLE (iBeacon, Eddystone)
+detect_ble_beacons() {
+    local beacon_data="$1"
+    
+    echo "🔍 BLE Beacon Detection"
+    echo "Analyzing advertisement data..."
+    echo ""
+    
+    local beacons_found=()
+    
+    # Detectar iBeacons
+    if echo "$beacon_data" | grep -qi "ibeacon\|4c00\|uuid"; then
+        beacons_found+=("iBeacon")
+        echo "📡 iBeacon detected:"
+        
+        # Extrair informações do iBeacon
+        if echo "$beacon_data" | grep -q "UUID="; then
+            local uuid=$(echo "$beacon_data" | grep -o "UUID=[^[:space:]]*" | cut -d= -f2)
+            echo "  🆔 UUID: $uuid"
+        fi
+        
+        if echo "$beacon_data" | grep -q "Major="; then
+            local major=$(echo "$beacon_data" | grep -o "Major=[^[:space:]]*" | cut -d= -f2)
+            echo "  🔢 Major: $major"
+        fi
+        
+        if echo "$beacon_data" | grep -q "Minor="; then
+            local minor=$(echo "$beacon_data" | grep -o "Minor=[^[:space:]]*" | cut -d= -f2)
+            echo "  🔢 Minor: $minor"
+        fi
+        
+        echo "  📍 Use Case: Indoor positioning, proximity marketing"
+        echo ""
+    fi
+    
+    # Detectar Eddystone beacons
+    if echo "$beacon_data" | grep -qi "eddystone\|url=\|0xfeaa"; then
+        beacons_found+=("Eddystone")
+        echo "🌐 Eddystone beacon detected:"
+        
+        # Extrair URL se disponível
+        if echo "$beacon_data" | grep -q "URL="; then
+            local url=$(echo "$beacon_data" | grep -o "URL=[^[:space:]]*" | cut -d= -f2)
+            echo "  🔗 URL: $url"
+        fi
+        
+        # Detectar tipos de Eddystone
+        if echo "$beacon_data" | grep -qi "uid"; then
+            echo "  📡 Type: Eddystone-UID (unique identifier)"
+        elif echo "$beacon_data" | grep -qi "url"; then
+            echo "  📡 Type: Eddystone-URL (web URL)"
+        elif echo "$beacon_data" | grep -qi "tlm"; then
+            echo "  📡 Type: Eddystone-TLM (telemetry)"
+        fi
+        
+        echo "  📍 Use Case: Physical web, location services"
+        echo ""
+    fi
+    
+    # Detectar AltBeacon
+    if echo "$beacon_data" | grep -qi "altbeacon\|beac"; then
+        beacons_found+=("AltBeacon")
+        echo "🏷️ AltBeacon detected:"
+        echo "  📡 Type: Open source beacon standard"
+        echo "  📍 Use Case: Cross-platform proximity services"
+        echo ""
+    fi
+    
+    # Detectar beacons customizados
+    if echo "$beacon_data" | grep -qi "custom\|proprietary"; then
+        beacons_found+=("Custom Beacon")
+        echo "🔧 Custom beacon protocol detected:"
+        echo "  📡 Type: Proprietary beacon format"
+        echo "  ⚠️ Security: May have unknown vulnerabilities"
+        echo ""
+    fi
+    
+    # Resumo
+    echo "📊 Beacon Detection Summary:"
+    if [[ ${#beacons_found[@]} -eq 0 ]]; then
+        echo "  ❌ No standard beacons detected"
+        echo "  💡 Device may use custom advertisement format"
+    else
+        echo "  ✅ Beacons found: ${#beacons_found[@]}"
+        for beacon in "${beacons_found[@]}"; do
+            echo "    🏷️ $beacon"
+        done
+    fi
+    
+    # Análise de segurança
+    echo ""
+    echo "🔒 Security Analysis:"
+    if [[ ${#beacons_found[@]} -gt 0 ]]; then
+        echo "  📡 Broadcasting identifiable information"
+        echo "  📍 Location tracking possible"
+        echo "  👤 User profiling risk"
+        echo "  🔍 Requires privacy impact assessment"
+    else
+        echo "  ✅ No obvious beacon tracking detected"
+    fi
+    
+    return 0
+}
+
+# Analisar segurança BLE
+analyze_ble_security() {
+    local security_data="$1"
+    
+    echo "🔒 BLE Security Analysis"
+    echo "Analyzing security configuration..."
+    echo ""
+    
+    local security_score=0
+    local issues=()
+    
+    # Verificar método de emparelhamento
+    if echo "$security_data" | grep -qi "just.*works"; then
+        issues+=("Weak pairing method: Just Works")
+        echo "🔴 CRITICAL: Just Works pairing detected"
+        echo "  Risk: No authentication during pairing"
+        ((security_score += 3))
+    fi
+    
+    # Verificar criptografia
+    if echo "$security_data" | grep -qi "encryption.*none\|no.*encryption"; then
+        issues+=("No encryption enabled")
+        echo "🔴 CRITICAL: No encryption detected"
+        echo "  Risk: Data transmitted in plaintext"
+        ((security_score += 4))
+    elif echo "$security_data" | grep -qi "aes"; then
+        echo "✅ GOOD: AES encryption detected"
+        echo "  Security: Strong encryption in use"
+    fi
+    
+    # Verificar autenticação
+    if echo "$security_data" | grep -qi "authentication.*none\|no.*auth"; then
+        issues+=("Authentication disabled")
+        echo "🟡 WARNING: No authentication required"
+        echo "  Risk: Unauthorized access possible"
+        ((security_score += 2))
+    fi
+    
+    # Verificar autorização
+    if echo "$security_data" | grep -qi "authorization.*none\|no.*authz"; then
+        issues+=("Authorization not enforced")
+        echo "🟡 WARNING: No authorization checks"
+        echo "  Risk: Privilege escalation possible"
+        ((security_score += 1))
+    fi
+    
+    # Verificar integridade
+    if echo "$security_data" | grep -qi "integrity.*none\|no.*integrity"; then
+        issues+=("No integrity protection")
+        echo "🟡 WARNING: No integrity verification"
+        echo "  Risk: Data tampering possible"
+        ((security_score += 1))
+    fi
+    
+    echo ""
+    echo "📊 Security Assessment Summary:"
+    echo "  🔢 Issues found: ${#issues[@]}"
+    echo "  📈 Risk score: $security_score/10"
+    
+    if [[ $security_score -eq 0 ]]; then
+        echo "  ✅ Security level: EXCELLENT"
+    elif [[ $security_score -le 2 ]]; then
+        echo "  🟢 Security level: GOOD"
+    elif [[ $security_score -le 5 ]]; then
+        echo "  🟡 Security level: MODERATE"
+    elif [[ $security_score -le 8 ]]; then
+        echo "  🟠 Security level: POOR"
+    else
+        echo "  🔴 Security level: CRITICAL"
+    fi
+    
+    if [[ ${#issues[@]} -gt 0 ]]; then
+        echo ""
+        echo "🚨 Security Issues Identified:"
+        for issue in "${issues[@]}"; do
+            echo "  • $issue"
+        done
+    fi
+    
+    echo ""
+    echo "✅ BLE security analysis completed"
+    return 0
+}

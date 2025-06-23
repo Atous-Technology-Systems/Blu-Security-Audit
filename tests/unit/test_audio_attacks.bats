@@ -44,8 +44,8 @@ Protocol: A2DP"
     
     run detect_audio_profiles "$device_info"
     [ "$status" -eq 0 ]
-    [[ "$output" =~ "source" ]]
-    [[ "$output" =~ "sink" ]]
+    [[ "$output" =~ "Source" ]]
+    [[ "$output" =~ "Sink" ]]
 }
 
 # Teste 3: Configurar captura de áudio

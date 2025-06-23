@@ -413,3 +413,64 @@ EOL
     log_message "SUCCESS" "HID report generated"
     return 0
 }
+
+# Simular ataque HID (para testes seguros)
+simulate_hid_attack() {
+    local target="$1"
+    local attack_type="${2:-keyboard}"
+    local payload="${3:-test_payload}"
+    local mode="${4:-safe}"
+    
+    validate_hid_target "$target" || return 1
+    
+    echo "🔬 SIMULATING HID attack for testing"
+    echo "Target: $target"
+    echo "Attack Type: $attack_type"
+    echo "Payload: $payload"
+    echo "Mode: $mode"
+    echo ""
+    
+    case "$attack_type" in
+        "keyboard")
+            echo "⌨️ Keyboard injection simulation"
+            echo "Simulating keystroke injection..."
+            sleep 1
+            echo "Payload: $payload"
+            echo "Characters to inject: ${#payload}"
+            echo "Estimated execution time: $((${#payload} * 50))ms"
+            echo "Target response: Simulated keystrokes accepted"
+            ;;
+        "mouse")
+            echo "🖱️ Mouse injection simulation"
+            echo "Simulating mouse movement and clicks..."
+            sleep 1
+            echo "Move to: (100, 200)"
+            echo "Click: Left button"
+            echo "Target response: Simulated mouse events processed"
+            ;;
+        "combo")
+            echo "⌨️🖱️ Combined keyboard+mouse simulation"
+            echo "Simulating complex input sequence..."
+            sleep 1
+            echo "Phase 1: Mouse positioning"
+            echo "Phase 2: Click to focus"
+            echo "Phase 3: Keystroke injection"
+            echo "Target response: Multi-modal attack simulation completed"
+            ;;
+        *)
+            echo "❌ Unknown HID simulation type: $attack_type"
+            return 1
+            ;;
+    esac
+    
+    # Análise de segurança simulada
+    echo ""
+    echo "🔒 Security Analysis:"
+    echo "  Target accepts HID input: YES (simulated)"
+    echo "  Authentication required: NO (simulated)"
+    echo "  Input validation: NONE (simulated)"
+    echo "  Risk level: HIGH (simulated)"
+    
+    echo "✅ HID attack simulation completed safely"
+    return 0
+}

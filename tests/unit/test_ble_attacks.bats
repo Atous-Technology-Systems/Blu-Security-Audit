@@ -93,7 +93,7 @@ Service: Device Information"
     
     run detect_ble_device_type "$services_data"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"fitness"* ]] || [[ "$output" == *"health"* ]]
+    [[ "$output" == *"Fitness"* ]] || [[ "$output" == *"Health"* ]]
 }
 
 # Teste 9: Analisar segurança BLE
