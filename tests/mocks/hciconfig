@@ -1,0 +1,6 @@
+#!/bin/bash
+if [[ "$1" == "hci0" ]]; then
+    echo "hci0: Type: BR/EDR  Bus: USB"
+    exit 0
+fi
+exit 1

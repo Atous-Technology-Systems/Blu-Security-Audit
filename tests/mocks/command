@@ -1,0 +1,7 @@
+#!/bin/bash
+if [[ "$1" == "-v" ]]; then
+    case "$2" in
+        "hcitool"|"sdptool"|"l2ping") exit 0 ;;
+        *) exit 1 ;;
+    esac
+fi

@@ -1,0 +1,11 @@
+# BlueSecAudit v2.0 - Targets File
+# Este arquivo será preenchido automaticamente durante o scanning
+# Formato: MAC_ADDRESS<TAB>DEVICE_NAME
+#
+# ⚠️ IMPORTANTE: 
+# - Apenas dispositivos descobertos durante scanning aparecerão aqui
+# - NÃO adicione entradas manuais sem autorização
+# - Todos os ataques devem ter autorização explícita
+#
+# Exemplo de formato (NÃO adicione manualmente):
+# AA:BB:CC:DD:EE:FF	Nome do Dispositivo

@@ -1,0 +1,8 @@
+#!/bin/bash
+# Mock ping that always succeeds for 8.8.8.8
+# Command: ping -c 1 -W 5 8.8.8.8
+if [[ "$5" == "8.8.8.8" ]] || [[ "$*" == *"8.8.8.8"* ]]; then
+    exit 0
+else
+    exit 1
+fi
