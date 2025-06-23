@@ -1,4 +1,4 @@
-# 🔐 BlueSecAudit v2.0 - Advanced Bluetooth Security Auditing Tool
+# 🔐 BluSecAudit v2.0 - Advanced Bluetooth Security Auditing Tool
 
 [![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/bluesecaudit/v2.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
