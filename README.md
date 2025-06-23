@@ -681,14 +681,6 @@ O **BlueSecAudit v2.0** representa o estado da arte em ferramentas de auditoria 
 4. **Execute** sua primeira auditoria com `./bs-at-v2.sh`
 5. **Gere** relatórios profissionais com `generate_final_report.py`
 
-### 📞 Suporte e Comunidade
-
-- 📧 **Suporte Técnico**: support@bluesecaudit.org
-- 🎓 **Treinamento**: training@bluesecaudit.org  
-- 🔒 **Questões de Segurança**: security@bluesecaudit.org
-- 💼 **Parcerias**: business@bluesecaudit.org
-
----
 
 <div align="center">
 
