@@ -1,0 +1,4 @@
+#!/bin/bash
+# Mock para hciconfig
+echo "MOCK: hciconfig $@" >&2
+exit 0

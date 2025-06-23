@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Service Name: Audio Gateway"
+echo "Service Class ID List:"
+echo '  "Handfree Audio Gateway" (0x111f)'

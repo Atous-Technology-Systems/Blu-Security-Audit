@@ -1,0 +1,4 @@
+#!/bin/bash
+# Mock para hcidump
+echo "MOCK: hcidump $@" >&2
+exit 0

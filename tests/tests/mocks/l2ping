@@ -1,0 +1,4 @@
+#!/bin/bash
+# Mock para l2ping
+echo "MOCK: l2ping $@" >&2
+exit 0

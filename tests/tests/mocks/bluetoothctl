@@ -1,0 +1,4 @@
+#!/bin/bash
+# Mock para bluetoothctl
+echo "MOCK: bluetoothctl $@" >&2
+exit 0

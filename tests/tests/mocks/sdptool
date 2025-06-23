@@ -1,0 +1,4 @@
+#!/bin/bash
+# Mock para sdptool
+echo "MOCK: sdptool $@" >&2
+exit 0

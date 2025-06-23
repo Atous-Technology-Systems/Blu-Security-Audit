@@ -1,0 +1,4 @@
+#!/bin/bash
+# Mock para hcitool
+echo "MOCK: hcitool $@" >&2
+exit 0

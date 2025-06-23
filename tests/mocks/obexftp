@@ -1,0 +1,4 @@
+#!/bin/bash
+# Mock para obexftp
+echo "MOCK: obexftp $@" >&2
+exit 0

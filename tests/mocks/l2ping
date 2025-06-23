@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "PING $3:"
+echo "44 bytes from $3 id 0 time 18.59ms"
